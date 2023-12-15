@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://appsforoffice.microsoft.com/lib/beta/hosted/office.js"></script>
+  </head>
+  <body>
+    <button id="auth-no-prompt">Try to Auth (no prompt)</button>
+    <button id="auth-with-prompt">Try to Auth (with prompt)</button>
+
+    <pre></pre>
+
+    <script>
+      const buttonNoPrompt = document.querySelector("#auth-no-prompt");
+      const buttonWithPrompt = document.querySelector("#auth-with-prompt");
+      const text = document.querySelector("pre");
+
+      async function onAuth(prompts) {
+        try {
+          text.innerHTML = "Loading...";
+
+          await Office.auth.getAccessToken({
+            forMSGraphAccess: false,
+            allowSignInPrompt: prompts,
+            allowConsentPrompt: prompts,
+          });
+
+          text.innerHTML = "Success";
+        } catch (err) {
+          text.innerHTML =
+            "Error: " + JSON.stringify(err, Object.getOwnPropertyNames(err), 2);
+        }
+      }
+
+      async function onInitialize() {
+        buttonNoPrompt.addEventListener("click", () => {
+          onAuth(false);
+        });
+
+        buttonWithPrompt.addEventListener("click", () => {
+          onAuth(true);
+        });
+      }
+
+      Office.initialize = onInitialize;
+    </script>
+  </body>
+</html>
